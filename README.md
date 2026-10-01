@@ -36,3 +36,19 @@ With the following thing:
 - preprocessing: the python venv including fmriprep-docker, dcm2bids.
 - run_dcm2bids.sh & run_fMRIprep.sh: bash script to run dcm2bids and fMRIprep, respectively.
 - working: work directory for fMRIprep.    
+
+## Step-by-step:
+Step 1: Run dcm2bids_scaffold to create a BIDS-structured folder:
+```
+$ dcm2bids_scaffold -o BIDS-DIR
+```
+Step 2: Move/download the data to sub-folder ```sourcedata``` in the BIDS-structured folder:
+```
+$ sudo cp -r DATA-FOLDER BIDS-DIR/sourcedata
+```
+Step 3 (Optional): run dcm2bids_helper to help with config file for dcm2bids:
+```
+$ dcm2bids_helper -d sourcedata/DATA-FOLDER/
+```
+Step 4: run the rundcm2bids.sh after editing the config file and the directory in the bash shell:
+
