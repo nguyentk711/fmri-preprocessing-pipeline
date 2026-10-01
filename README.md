@@ -51,4 +51,6 @@ Step 3 (Optional): run dcm2bids_helper to help with config file for dcm2bids:
 $ dcm2bids_helper -d sourcedata/DATA-FOLDER/
 ```
 Step 4: run the rundcm2bids.sh after editing the config file and the directory in the bash shell:
-
+```
+$ ./run_dcm2bids.sh
+```
