@@ -4,8 +4,9 @@
 SOURCE_DIR=~/Desktop/fMRI/data_bids/sourcedata/ADNI
 CONFIG_FILE=~/Desktop/fMRI/config.json
 OUTPUT_DIR=~/Desktop/fMRI/data_bids
+LOG_FILE=~/Desktop/fMRI/missing_dir_sub.txt
 
-echo "Starting parallel BIDS conversion..."
+echo "Starting BIDS conversion..."
 
 # Loop through every directory inside the ADNI folder
 for subj_dir in "$SOURCE_DIR"/*/; do
@@ -15,18 +16,22 @@ for subj_dir in "$SOURCE_DIR"/*/; do
     subj_folder=$(basename "$subj_dir")    # Extract just "002_S_4654"
     
     # 2. Strip the underscores for BIDS compliance
-    bids_id=${subj_folder##*_}             # Becomes "002S4654"
+    bids_id=${subj_folder##*_}             # Becomes "4654"
     
     echo "Launching dcm2bids for: $bids_id"
     
     # 3. Run dcm2bids in the background
-    # The '&' at the end of the line tells bash to run this immediately 
-    # without waiting for it to finish, allowing the loop to start the next subject.
-    dcm2bids -d "$subj_dir" -p "$bids_id" -c "$CONFIG_FILE" -o "$OUTPUT_DIR" &
+    dcm2bids -d "$subj_dir" -p "$bids_id" -c "$CONFIG_FILE" -o "$OUTPUT_DIR"
 
+    if ! ([ -d "$OUTPUT_DIR/sub-${bids_id}/anat" ] && [ -d "$OUTPUT_DIR/sub-${bids_id}/func" ]); then
+        if [ -d "$OUTPUT_DIR/sub-${bids_id}/anat" ]; then
+            echo "sub-${bids_id}: missing func" >> "$LOG_FILE"
+        elif [ -d "$OUTPUT_DIR/sub-${bids_id}/func" ]; then
+            echo "sub-${bids_id}: missing anat" >> "$LOG_FILE"
+        else
+            echo "sub-${bids_id}: missing both anat and func" >> "$LOG_FILE"
+        fi
+    fi
 done
-
-# 4. Wait for all background tasks to finish before exiting
-wait
 
 echo "All subjects have been successfully processed!"
