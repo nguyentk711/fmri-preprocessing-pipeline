@@ -6,6 +6,8 @@ CONFIG_FILE=~/Desktop/fMRI/config.json
 OUTPUT_DIR=~/Desktop/fMRI/data_bids
 LOG_FILE=~/Desktop/fMRI/missing_dir_sub.txt
 
+SKIP_SUBJECTS=() # Add these after you figured out which subjects are broken.
+
 echo "Starting BIDS conversion..."
 
 # Loop through every directory inside the ADNI folder
@@ -18,9 +20,13 @@ for subj_dir in "$SOURCE_DIR"/*/; do
     # 2. Strip the underscores for BIDS compliance
     bids_id=${subj_folder##*_}             # Becomes "4654" (e.g. 002_S_4654 --> 4654)
     
+    if [[ " ${SKIP_SUBJECTS[*]} " =~ " ${bids_id} " ]]; then
+        echo "Skipping sub-${bids_id}"
+        continue
+    fi
     echo "Launching dcm2bids for: $bids_id"
     
-    # 3. Run dcm2bids in the background
+    # 3. Run dcm2bids
     dcm2bids -d "$subj_dir" -p "$bids_id" -c "$CONFIG_FILE" -o "$OUTPUT_DIR"
 
     if ! ([ -d "$OUTPUT_DIR/sub-${bids_id}/anat" ] && [ -d "$OUTPUT_DIR/sub-${bids_id}/func" ]); then
