@@ -42,11 +42,11 @@ Step 1: Run dcm2bids_scaffold to create a BIDS-structured folder:
 ```
 $ dcm2bids_scaffold -o BIDS-DIR
 ```
-Step 2: Move/download the data to sub-folder ```sourcedata``` in the BIDS-structured folder:
+Step 2: Create a symlink of the data to sub-folder ```sourcedata``` in the BIDS-structured folder:
 ```
-$ sudo cp -r DATA-FOLDER BIDS-DIR/sourcedata
+$ sudo ln -s ~/ADNI/* ~/BIDS_DIR/sourcedata/
 ```
-Step 3 (Optional): run dcm2bids_helper to help with config file for dcm2bids:
+Step 3 (Optional): run dcm2bids_helper to help with config file for dcm2bids (if there's already a config file then it's optional):
 ```
 $ dcm2bids_helper -d sourcedata/DATA-FOLDER/
 ```
